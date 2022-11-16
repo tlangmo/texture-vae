@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "texture-vae"
+version = "0.1.0"
+description = ""
+authors = ["Tobias Lang <tobias@motesque.com>"]
+readme = "README.md"
+packages = [{include = "texture_vae"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+matplotlib = "^3.6.2"
+tqdm = "^4.64.1"
+tensorboard = "^2.11.0"
+setuptools = "59.5.0"
+torchsummary = "^1.5.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
