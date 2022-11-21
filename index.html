@@ -78,11 +78,13 @@
         }
         return arr;
     }
-
+    var ortSession = null;
     // use an async context to call onnxruntime functions.
     async function createTextureTile(count, mean, stdDev) {
         const latent_dims = 128
-        const session = await ort.InferenceSession.create('wasm/texture_vae_l128_r128.onnx');
+        if (!ortSession) {
+         ortSession = await ort.InferenceSession.create('wasm/texture_vae_l128_r128.onnx');
+        }
         // prepare inputs. a tensor need its corresponding TypedArray as data
         vaeSeed();
         let latent = []
@@ -92,7 +94,7 @@
 
         const inputData = Float32Array.from(latent);
         let tensorInput = new ort.Tensor('float32', inputData, [count, latent_dims]);
-        let results = await session.run({input: tensorInput});
+        let results = await ortSession.run({input: tensorInput});
         const float32Data = results.output.data
         console.log(results)
         let images = []
