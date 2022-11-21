@@ -17,7 +17,7 @@
         }
 
         div[id=root] {
-            width: 50%;
+            width: 100%;
         }
     </style>
 </header>
@@ -45,6 +45,16 @@
 
 </script>
 <script>
+    latent = []
+
+    let focusLatents = async (idx) => {
+        const imgs = await createTextureTile(16,null,null, latent.slice(idx*128, (idx+1)*128))
+         for (let i = 0; i < imgs.length; i++) {
+            let canvas = document.getElementById(i)
+            let ctx = canvas.getContext('2d');
+             ctx.putImageData(imgs[i], 0, 0);
+        }
+    }
     let createCanvases = () => {
         //     <canvas style="width: 512px" id="canvas" width="128" height="128" ></canvas>
         let rootEle = document.getElementById("root")
@@ -54,6 +64,7 @@
             ele.setAttribute("class", "tile");
             ele.setAttribute("width", 128);
             ele.setAttribute("height", 128);
+            ele.addEventListener('click', (evt) => { focusLatents(c) })
             rootEle.appendChild(ele)
         }
     }
@@ -80,18 +91,26 @@
     }
     var ortSession = null;
     // use an async context to call onnxruntime functions.
-    async function createTextureTile(count, mean, stdDev) {
+    async function createTextureTile(count, mean, stdDev, baseLatents) {
         const latent_dims = 128
         if (!ortSession) {
          ortSession = await ort.InferenceSession.create('wasm/texture_vae_l128_r128.onnx');
         }
         // prepare inputs. a tensor need its corresponding TypedArray as data
         vaeSeed();
-        let latent = []
-        for (let n = 0; n < count * latent_dims; n++) {
-            latent[n] = vaeRandn(mean, stdDev)
+        latent = []
+        if (baseLatents) {
+            for (let n = 0; n < count * latent_dims; n++) {
+                latent[n] = baseLatents[n%latent_dims] + vaeRandn(0, 0.5)
+            }
+            console.log(latent)
+            gblBaseLatents = baseLatents;
         }
-
+        else {
+            for (let n = 0; n < count * latent_dims; n++) {
+                latent[n] = vaeRandn(mean, stdDev)
+            }
+        }
         const inputData = Float32Array.from(latent);
         let tensorInput = new ort.Tensor('float32', inputData, [count, latent_dims]);
         let results = await ortSession.run({input: tensorInput});
@@ -107,7 +126,6 @@
     }
 
     async function generateBatch() {
-
         const imgs = await createTextureTile(16, 0, 1)
         for (let i = 0; i < imgs.length; i++) {
             let canvas = document.getElementById(i)
@@ -117,7 +135,7 @@
     }
     createCanvases();
     generateBatch();
-    window.setInterval(generateBatch,4000);
+    window.setInterval(() => {generateBatch(gblBaseLatents)},5000);
 
 
 </script>

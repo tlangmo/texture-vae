@@ -42,7 +42,7 @@ set -o xtrace # show commands
 
 # due to https://github.com/jazzband/pip-tools/issues/1558, we need pin pip to an older version!
 
-pip3 install --upgrade isort pur==5.4.0 black==21.12b0 flake8 shapely==1.8.2 rtree==1.0.0
+pip3 install --upgrade pip isort pur==5.4.0 black==21.12b0 flake8 shapely==1.8.2 rtree==1.0.0
 
 pip3 install --no-index --no-deps torch==1.10.2${TORCH_VARIANT} torchvision==0.11.3${TORCH_VARIANT} \
     -f https://download.pytorch.org/whl/torch_stable.html
