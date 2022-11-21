@@ -13,7 +13,13 @@ tqdm = "^4.64.1"
 tensorboard = "^2.11.0"
 setuptools = "59.5.0"
 torchsummary = "^1.5.1"
+pytest = "^7.2.0"
+click = "^8.1.3"
+onnx = "^1.12.0"
+onnxruntime = "^1.13.1"
 
+[tool.poetry.scripts]
+vae-crop-gen = "texture_vae.cli.crop_gen:create_image_crops"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<header>
+    <title>ONNX Runtime JavaScript examples: Quick Start - Web (using script tag)</title>
+    <style>
+        .tile {
+            margin: 8px;
+            width: 200px;
+        }
+
+        body {
+            background-color: #73CCC4;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 100 60'%3E%3Cg %3E%3Crect fill='%2373CCC4' width='11' height='11'/%3E%3Crect fill='%2375cdc3' x='10' width='11' height='11'/%3E%3Crect fill='%2377cdc3' y='10' width='11' height='11'/%3E%3Crect fill='%2378cec2' x='20' width='11' height='11'/%3E%3Crect fill='%237acfc2' x='10' y='10' width='11' height='11'/%3E%3Crect fill='%237cd0c1' y='20' width='11' height='11'/%3E%3Crect fill='%237ed0c1' x='30' width='11' height='11'/%3E%3Crect fill='%2380d1c0' x='20' y='10' width='11' height='11'/%3E%3Crect fill='%2382d2c0' x='10' y='20' width='11' height='11'/%3E%3Crect fill='%2384d3c0' y='30' width='11' height='11'/%3E%3Crect fill='%2386d3bf' x='40' width='11' height='11'/%3E%3Crect fill='%2388d4bf' x='30' y='10' width='11' height='11'/%3E%3Crect fill='%238ad5be' x='20' y='20' width='11' height='11'/%3E%3Crect fill='%238cd5be' x='10' y='30' width='11' height='11'/%3E%3Crect fill='%238ed6bd' y='40' width='11' height='11'/%3E%3Crect fill='%2390d7bd' x='50' width='11' height='11'/%3E%3Crect fill='%2392d7bc' x='40' y='10' width='11' height='11'/%3E%3Crect fill='%2394d8bc' x='30' y='20' width='11' height='11'/%3E%3Crect fill='%2396d9bb' x='20' y='30' width='11' height='11'/%3E%3Crect fill='%2398d9bb' x='10' y='40' width='11' height='11'/%3E%3Crect fill='%239bdabb' y='50' width='11' height='11'/%3E%3Crect fill='%239ddaba' x='60' width='11' height='11'/%3E%3Crect fill='%239fdbba' x='50' y='10' width='11' height='11'/%3E%3Crect fill='%23a1dcba' x='40' y='20' width='11' height='11'/%3E%3Crect fill='%23a3dcb9' x='30' y='30' width='11' height='11'/%3E%3Crect fill='%23a5ddb9' x='20' y='40' width='11' height='11'/%3E%3Crect fill='%23a7ddb9' x='10' y='50' width='11' height='11'/%3E%3Crect fill='%23a9deb8' x='70' width='11' height='11'/%3E%3Crect fill='%23acdfb8' x='60' y='10' width='11' height='11'/%3E%3Crect fill='%23aedfb8' x='50' y='20' width='11' height='11'/%3E%3Crect fill='%23b0e0b8' x='40' y='30' width='11' height='11'/%3E%3Crect fill='%23b2e0b7' x='30' y='40' width='11' height='11'/%3E%3Crect fill='%23b4e1b7' x='20' y='50' width='11' height='11'/%3E%3Crect fill='%23b6e1b7' x='80' width='11' height='11'/%3E%3Crect fill='%23b9e2b7' x='70' y='10' width='11' height='11'/%3E%3Crect fill='%23bbe2b7' x='60' y='20' width='11' height='11'/%3E%3Crect fill='%23bde3b7' x='50' y='30' width='11' height='11'/%3E%3Crect fill='%23bfe4b6' x='40' y='40' width='11' height='11'/%3E%3Crect fill='%23c1e4b6' x='30' y='50' width='11' height='11'/%3E%3Crect fill='%23c3e5b6' x='90' width='11' height='11'/%3E%3Crect fill='%23c6e5b6' x='80' y='10' width='11' height='11'/%3E%3Crect fill='%23c8e6b6' x='70' y='20' width='11' height='11'/%3E%3Crect fill='%23cae6b6' x='60' y='30' width='11' height='11'/%3E%3Crect fill='%23cce7b6' x='50' y='40' width='11' height='11'/%3E%3Crect fill='%23cee7b7' x='40' y='50' width='11' height='11'/%3E%3Crect fill='%23d0e8b7' x='90' y='10' width='11' height='11'/%3E%3Crect fill='%23d2e8b7' x='80' y='20' width='11' height='11'/%3E%3Crect fill='%23d5e9b7' x='70' y='30' width='11' height='11'/%3E%3Crect fill='%23d7e9b7' x='60' y='40' width='11' height='11'/%3E%3Crect fill='%23d9e9b7' x='50' y='50' width='11' height='11'/%3E%3Crect fill='%23dbeab8' x='90' y='20' width='11' height='11'/%3E%3Crect fill='%23ddeab8' x='80' y='30' width='11' height='11'/%3E%3Crect fill='%23dfebb8' x='70' y='40' width='11' height='11'/%3E%3Crect fill='%23e1ebb8' x='60' y='50' width='11' height='11'/%3E%3Crect fill='%23e4ecb9' x='90' y='30' width='11' height='11'/%3E%3Crect fill='%23e6ecb9' x='80' y='40' width='11' height='11'/%3E%3Crect fill='%23e8edba' x='70' y='50' width='11' height='11'/%3E%3Crect fill='%23eaedba' x='90' y='40' width='11' height='11'/%3E%3Crect fill='%23eceebb' x='80' y='50' width='11' height='11'/%3E%3Crect fill='%23EEB' x='90' y='50' width='11' height='11'/%3E%3C/g%3E%3C/svg%3E");
+            background-attachment: fixed;
+            background-size: cover;
+            font-family: "Helvetica Neue", sans-serif;
+        }
+
+        div[id=root] {
+            width: 50%;
+        }
+    </style>
+</header>
+<body>
+<h1>Texture Vae</h1>
+<div id="root"></div>
+<!-- import ONNXRuntime Web from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+<script src="wasm/vae.js"></script>
+<!DOCTYPE html>
+
+<script>
+
+    function vaeRandn(mean, std) {
+        const result = Module.cwrap('vaeRandn',
+            'number', ['number', 'number']);
+        return result(mean, std)
+    }
+
+    function vaeSeed() {
+        const result = Module.cwrap('vaeSeed',
+            'number', []);
+        return result()
+    }
+
+</script>
+<script>
+    let createCanvases = () => {
+        //     <canvas style="width: 512px" id="canvas" width="128" height="128" ></canvas>
+        let rootEle = document.getElementById("root")
+        for (let c = 0; c < 16; c++) {
+            let ele = document.createElement("canvas")
+            ele.setAttribute("id", c);
+            ele.setAttribute("class", "tile");
+            ele.setAttribute("width", 128);
+            ele.setAttribute("height", 128);
+            rootEle.appendChild(ele)
+        }
+    }
+
+    function convert_f32rgb_to_touint8(imgf32, res) {
+        const arr = new Uint8ClampedArray(res * res * 4);
+        const strideSrc = res
+        const strideChannel = 128 * 128
+        const strideDst = res * 4 // canvas image is 4 channel rgba
+        // the output of the vae model is c,w,h
+        // the target image is w,h,c
+        // so we need to make sure we get the pixel data from the correct locations in memory
+        for (let resY = 0; resY < res; resY++) {
+            for (let resX = 0; resX < res; resX++) {
+                const srcIdx = resY * strideSrc + resX
+                const idxDst = resY * strideDst + resX * 4
+                arr[idxDst] = Math.floor(imgf32[srcIdx] * 255)
+                arr[idxDst + 1] = Math.floor(imgf32[srcIdx + strideChannel] * 255)
+                arr[idxDst + 2] = Math.floor(imgf32[srcIdx + strideChannel * 2] * 255)
+                arr[idxDst + 3] = 255
+            }
+        }
+        return arr;
+    }
+
+    // use an async context to call onnxruntime functions.
+    async function createTextureTile(count, mean, stdDev) {
+        const latent_dims = 128
+        const session = await ort.InferenceSession.create('wasm/texture_vae_l128_r128.onnx');
+        // prepare inputs. a tensor need its corresponding TypedArray as data
+        vaeSeed();
+        let latent = []
+        for (let n = 0; n < count * latent_dims; n++) {
+            latent[n] = vaeRandn(mean, stdDev)
+        }
+
+        const inputData = Float32Array.from(latent);
+        let tensorInput = new ort.Tensor('float32', inputData, [count, latent_dims]);
+        let results = await session.run({input: tensorInput});
+        const float32Data = results.output.data
+        console.log(results)
+        let images = []
+        for (let c = 0; c < count; c++) {
+            const arr = convert_f32rgb_to_touint8(float32Data.subarray(c * 3 * 128 * 128, (c + 1) * 3 * 128 * 128), results.output.dims[2])
+            let img = new ImageData(arr, results.output.dims[2], results.output.dims[3]);
+            images.push(img)
+        }
+        return images
+    }
+
+    async function generateBatch() {
+
+        const imgs = await createTextureTile(16, 0, 1)
+        for (let i = 0; i < imgs.length; i++) {
+            let canvas = document.getElementById(i)
+            let ctx = canvas.getContext('2d');
+            ctx.putImageData(imgs[i], 0, 0);
+        }
+    }
+    createCanvases();
+    generateBatch();
+    window.setInterval(generateBatch,4000);
+
+
+</script>
+
+
+</body>
+
+</html>
