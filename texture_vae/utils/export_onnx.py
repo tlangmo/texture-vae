@@ -58,5 +58,6 @@ def validate_onnx(model_fn:str, outdir:str):
         _save_image(idx, img, outdir)
 
 
-#export_to_onnx("/home/tlangmo/dev/texture-vae/snapshots/snapshot_lat128_res128_final_5500epoch.pth", 128, 128, "texture_vae_l128_r128.onnx")
-validate_onnx("../../wasm/texture_vae_l128_r128.onnx", "onnx")
+export_to_onnx("/home/tlangmo/dev/texture-vae/snapshots/snapshot_lat128_res128_2.5_curated.pth", 128, 128, "snapshot_lat128_res128_2.5_curated.onnx")
+#validate_onnx("texture_vea_l128_r128.onnx", "onnx")
+

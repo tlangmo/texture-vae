@@ -134,7 +134,7 @@ class Autoencoder(nn.Module):
     def forward(self,x):
         mu, log_var = self.encoder(x)
         z = self.reparameterize(mu, log_var)
-        return self.decoder(z), mu, log_var
+        return self.decoder(z), mu, log_var, z
 
     def weight_init(self, mean, std):
         for m in self.encoder._modules:
@@ -147,6 +147,10 @@ class Autoencoder(nn.Module):
             m.weight.data.normal_(mean, std)
             m.bias.data.zero_()
 #
+    def sample(self, latents: torch.Tensor):
+        with torch.no_grad():
+            imgs = self.decoder(latents)
+        return imgs
 
 #
 #

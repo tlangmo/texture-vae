@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import torch.utils.data
 import torch.distributions
 import torchvision
+import itertools
 import numpy as np
 import math
 from PIL import Image
@@ -50,28 +51,31 @@ def kl_loss(mu, log_var):
 def train(autoencoder: Autoencoder,
           train_data,
           epochs: int,
+          kl_weight: float,
           post_epoch: Callable):
     opt = torch.optim.Adam(params=autoencoder.parameters(), lr=1e-4)
-    scheduler = CyclicLR(opt, base_lr=1e-4, max_lr=1e-3, step_size_up=150, cycle_momentum=False)
+    scheduler = CyclicLR(opt, base_lr=1e-4, max_lr=1e-3, step_size_up=10, cycle_momentum=False)
     for epoch in range(epochs):
         losses = []
+        latents = []
+        labels = []
         with tqdm(train_data, unit="batch") as tepoch:
-            for x in tepoch:
-                if isinstance(x, list):
-                    x = x[0]
+            for x, l in tepoch:
                 x = x.to(autoencoder.device)
                 tepoch.set_description(f"Epoch {epoch}")
                 opt.zero_grad()
-                x_hat, mu, logvar = autoencoder(x)
+                x_hat, mu, logvar, z = autoencoder(x)
                 mse = torch.sum((x-x_hat)**2)
                 kld = kl_loss(mu, logvar)
-                loss = mse + kld
+                loss = mse + kl_weight*kld  # higher weight gives better generalization result in sampling
                 loss.backward()
                 opt.step()
                 scheduler.step()
                 losses.append(loss)
+                latents.append(z)
+                labels.append(l)
                 tepoch.set_postfix(loss=loss.item())#, lr=scheduler.get_last_lr()[0])
-        post_epoch(epoch, x_hat, mse, kld, sum(losses)/len(losses))
+        post_epoch(epoch, x_hat, mse, kld, sum(losses)/len(losses), latents, labels)
         tepoch.set_postfix(loss=sum(losses)/len(losses), lr=scheduler.get_last_lr()[0])
 
 def main():
@@ -79,38 +83,62 @@ def main():
        os.makedirs("../snapshots")
     LATENT_DIMS = 128
     TEXTURE_SIZE = 128
+    KL_WEIGHT = 2.5
     autoencoder = Autoencoder(latent_dims=LATENT_DIMS, image_size=TEXTURE_SIZE, device="cuda")
     autoencoder.weight_init(0, 0.02)
-    SNAPSHOT = f"../snapshots/snapshot_lat{LATENT_DIMS}_res{TEXTURE_SIZE}.pth"
+    SNAPSHOT = f"../snapshots/snapshot_lat{LATENT_DIMS}_res{TEXTURE_SIZE}_{KL_WEIGHT}_curated.pth"
     try:
         autoencoder.load_state_dict(torch.load(SNAPSHOT))
     except FileNotFoundError as err:
         pass
-    data = torch.utils.data.DataLoader(dataset.TextureDataset('../crops_bricks_many',
+    data = torch.utils.data.DataLoader(dataset.TextureDataset('../crops50',
                                             transform=torchvision.transforms.Resize(TEXTURE_SIZE)),
-                                       batch_size=32,
+                                       batch_size=25,
                                        shuffle=True)
     summary(autoencoder, (3, TEXTURE_SIZE, TEXTURE_SIZE), device=autoencoder.device)
-    input_images = next(iter(data))
+    input_images, labels = next(iter(data))
     images_plt = [(input_images[b].permute(1, 2, 0).numpy() * 255).astype('uint8') for b in
                   range(input_images.shape[0])]
     plot_image_list(images_plt)
     plt.show()
     plt.rcParams['figure.dpi'] = 300
-    tb_writer = SummaryWriter(f'../tensorboard/runs/texture-vae-lat{LATENT_DIMS}_res{TEXTURE_SIZE}_mssim')
+    tb_writer = SummaryWriter(f'../tensorboard/runs/texture-vae-lat{LATENT_DIMS}_res{TEXTURE_SIZE}_{KL_WEIGHT}_curated')
 
-    def _log_epoch(epoch:int, x_hat, mse_loss, kl_loss, total_loss):
+    def _log_epoch(epoch:int, x_hat, mse_loss, kl_loss, total_loss, latents, labels):
         torch.save(autoencoder.state_dict(), SNAPSHOT)
+        epoch += 1000
+        all_latents = torch.stack(latents, dim=0).reshape(-1, LATENT_DIMS)
+        all_labels = torch.tensor(list(itertools.chain.from_iterable(labels)), dtype=torch.int32)
+        if epoch % 10 == 0:
+            torch.save({"latents":all_latents, "labels": all_labels }, f"./texture-vae-lat{LATENT_DIMS}_res{TEXTURE_SIZE}_{KL_WEIGHT}.pth")
         tb_writer.add_scalar('Loss/mse', mse_loss.item(), epoch)
         tb_writer.add_scalar('Loss/kl', kl_loss.item(), epoch)
         tb_writer.add_scalar('Loss/total', total_loss.item(), epoch)
-        images = create_recons(autoencoder, 16, latent_dims=LATENT_DIMS,
-                               image_size=TEXTURE_SIZE, channels=3, img=x_hat[:16])
-        fig_gen = plot_image_list(images)
-        tb_writer.add_figure("reconstruction", fig_gen, global_step=epoch)
+        tb_writer.add_images("reconstruction", x_hat, global_step=epoch)
+        samples = torch.randn(16,LATENT_DIMS).to("cuda")
+        sampled_images = autoencoder.sample(samples)
+        tb_writer.add_images("sampled", sampled_images, global_step=epoch)
 
-    train(autoencoder, data, epochs=100, post_epoch=_log_epoch)
+
+    train(autoencoder, data, epochs=2000, post_epoch=_log_epoch, kl_weight=KL_WEIGHT)
     tb_writer.close()
+
+def plot():
+    from tsne_torch import TorchTSNE as TSNE
+    plot_data= torch.load( f"./latents_720_curated.pth")
+    lbl = plot_data["labels"]
+    lbls = torch.where(lbl > 90, lbl, torch.zeros_like(lbl))
+    lbls_mask = torch.nonzero(lbls).squeeze()
+    lbls_used = lbls[lbls_mask].squeeze()
+    samples_used = plot_data["latents"][lbls_mask]
+    X_emb = TSNE(n_components=2, perplexity=30, n_iter=10000, verbose=True).fit_transform(samples_used)  # returns shape (n_samples, 2)
+    np.save("emb.pth", X_emb)
+    #X_emb = np.load("emb.pth.npy")
+    plt.scatter(X_emb[:,0], X_emb[:,1], c=lbls_used.detach().cpu().numpy())
+    plt.show()
+
+
 
 if __name__ == '__main__':
     main()
+    #plot()

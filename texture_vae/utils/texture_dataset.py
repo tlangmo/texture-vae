@@ -12,6 +12,11 @@ class TextureDataset(Dataset):
         self.img_dir = img_dir
         self.transform = transform
         self.files = list(Path(self.img_dir).glob("*.jpg"))
+        self.files = list(sorted(self.files,key=TextureDataset.extract_label))
+
+    @staticmethod
+    def extract_label(fn):
+        return int(fn.name.split("_")[0])
 
     def __len__(self):
         return len(self.files)
@@ -22,11 +27,11 @@ class TextureDataset(Dataset):
         image = image.float().div(255)
         if self.transform:
             image = self.transform(image)
-        return image
+        return image, TextureDataset.extract_label(img_path)
 
 
 if __name__ == "__main__":
-    dl = TextureDataset("crops", Resize(64))
+    dl = TextureDataset("../../crops", Resize(64))
     figure = plt.figure(figsize=(8, 8))
     cols, rows = 3, 3
     train_dataloader = DataLoader(dl, batch_size=18, shuffle=True)

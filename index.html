@@ -98,7 +98,7 @@
     async function createTextureTile(count, mean, stdDev, baseLatents) {
         const latent_dims = 128
         if (!ortSession) {
-         ortSession = await ort.InferenceSession.create('wasm/texture_vae_l128_r128.onnx');
+         ortSession = await ort.InferenceSession.create('wasm/snapshot_lat128_res128_2.5_curated.onnx');
         }
         // prepare inputs. a tensor need its corresponding TypedArray as data
         vaeSeed();

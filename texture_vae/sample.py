@@ -14,7 +14,7 @@ def sample():
     LATENT_DIMS = 128
     TEXTURE_SIZE = 128
     autoencoder = Autoencoder(latent_dims=LATENT_DIMS, image_size=TEXTURE_SIZE, device="cpu")
-    weights_fn = "/home/tlangmo/dev/texture-vae/snapshots/snapshot_lat128_res128.pth"
+    weights_fn = "/home/tlangmo/dev/texture-vae/snapshots/snapshot_lat128_res128_curated.pth"
     try:
         autoencoder.load_state_dict(torch.load(weights_fn))
         pass
