@@ -1,0 +1,9 @@
+model:
+  latent_dims: 64
+  texture_size: 128
+  kl_weight: 0.7
+lr: 1e-3
+epochs: 500
+snapshots: "../snapshots"
+train_images: "../crops1000"
+tensorboard: "../tensorboard/runs/lat64_res128_kl0.7"

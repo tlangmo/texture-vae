@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <header>
-    <title>ONNX Runtime JavaScript examples: Quick Start - Web (using script tag)</title>
+    <title>Texture VAE</title>
     <style>
         .tile {
             margin: 8px;
@@ -22,8 +22,14 @@
     </style>
 </header>
 <body>
-<h1>Texture Vae</h1>
+<h1>Texture VAE Showcase</h1>
+<p>These texture tiles are automatically generated in the Browser using a Machine Learning technique called
+Convolutional Variational Auto-Encoder.</p>
+<p>Every texture is 128x128 pixels and encoded as a 64-element vector (Latent Features). In your Browser, an ONNX model
+    decodes those feature vectors back to visible images. </p>
+<p>Creating textures at runtime using ML opens a lot of creative possiblities. </p>
 <div id="root"></div>
+<p>Click on an image to create variants </p>
 <!-- import ONNXRuntime Web from CDN -->
 <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
 <script src="wasm/vae.js"></script>
@@ -46,9 +52,10 @@
 </script>
 <script>
     latent = []
-
+    const LATENT_DIMS=64
+    const NUM_TILES = 16
     let focusLatents = async (idx) => {
-        const imgs = await createTextureTile(16,null,null, latent.slice(idx*128, (idx+1)*128))
+        const imgs = await createTextureTile(NUM_TILES,null,null, latent.slice(idx*LATENT_DIMS, (idx+1)*LATENT_DIMS))
          for (let i = 0; i < imgs.length; i++) {
             let canvas = document.getElementById(i)
             let ctx = canvas.getContext('2d');
@@ -96,25 +103,24 @@
     var ortSession = null;
     // use an async context to call onnxruntime functions.
     async function createTextureTile(count, mean, stdDev, baseLatents) {
-        const latent_dims = 128
         if (!ortSession) {
-         ortSession = await ort.InferenceSession.create('wasm/snapshot_lat128_res128_2.5_curated.onnx');
+         ortSession = await ort.InferenceSession.create('wasm/snapshot_lat64_res128_0.75.onnx');
         }
         // prepare inputs. a tensor need its corresponding TypedArray as data
         vaeSeed();
         latent = []
         if (baseLatents) {
-            for (let n = 0; n < count * latent_dims; n++) {
-                latent[n] = baseLatents[n%latent_dims] + vaeRandn(0, 0.5)
+            for (let n = 0; n < count * LATENT_DIMS; n++) {
+                 latent[n] =  baseLatents[n%LATENT_DIMS] + vaeRandn(0, 0.2)
             }
         }
         else {
-            for (let n = 0; n < count * latent_dims; n++) {
+            for (let n = 0; n < count * LATENT_DIMS; n++) {
                 latent[n] = vaeRandn(mean, stdDev)
             }
         }
         const inputData = Float32Array.from(latent);
-        let tensorInput = new ort.Tensor('float32', inputData, [count, latent_dims]);
+        let tensorInput = new ort.Tensor('float32', inputData, [count, LATENT_DIMS]);
         let results = await ortSession.run({input: tensorInput});
         const float32Data = results.output.data
         console.log(results)
@@ -128,7 +134,7 @@
     }
 
     async function generateBatch() {
-        const imgs = await createTextureTile(16, 0, 1)
+        const imgs = await createTextureTile(NUM_TILES, 0, 1)
         for (let i = 0; i < imgs.length; i++) {
             let canvas = document.getElementById(i)
             let ctx = canvas.getContext('2d');
@@ -137,9 +143,7 @@
     }
     createCanvases();
     generateBatch();
-    var curIntHdl = window.setInterval(() => {generateBatch()},5000);
-
-
+    var curIntHdl = window.setInterval(() => {generateBatch()},3000);
 </script>
 
 

@@ -27,23 +27,27 @@ class VariationalEncoder(nn.Module):
         img_size //= 2
         l1 = nn.Sequential(
             nn.Conv2d(in_channels=channels, out_channels=channels*2, kernel_size=(4, 4), stride=(2, 2), padding=1),
-            torch.nn.BatchNorm2d(channels*2),
-            torch.nn.LeakyReLU())
+            torch.nn.LeakyReLU(),
+       #     torch.nn.BatchNorm2d(channels*2)
+        )
+
 
         channels *= 2
         img_size //= 2
 
         l2 = nn.Sequential(
             nn.Conv2d(in_channels=channels, out_channels=channels * 2, kernel_size=(4, 4), stride=(2, 2), padding=1),
-            torch.nn.BatchNorm2d(channels * 2),
-            torch.nn.LeakyReLU())
+            torch.nn.LeakyReLU(),
+        #    torch.nn.BatchNorm2d(channels * 2)
+        )
         channels *= 2
         img_size //= 2
 
         l3 = nn.Sequential(
             nn.Conv2d(in_channels=channels, out_channels=channels * 2, kernel_size=(4, 4), stride=(2, 2), padding=1),
-            torch.nn.BatchNorm2d(channels * 2),
-            torch.nn.LeakyReLU())
+            torch.nn.LeakyReLU(),
+       #     torch.nn.BatchNorm2d(channels * 2)
+        )
         channels *= 2
         img_size //= 2
 
@@ -72,30 +76,34 @@ class VariationalDecoder(nn.Module):
         l0 = nn.Sequential(
             nn.ConvTranspose2d(in_channels=encoded_channels, out_channels=encoded_channels//2, kernel_size=(4, 4),
                       stride=(2, 2), padding=(1,1)),
-            torch.nn.BatchNorm2d(encoded_channels//2),
-            torch.nn.LeakyReLU())
+            torch.nn.LeakyReLU(),
+          #  torch.nn.BatchNorm2d(encoded_channels//2)
+        )
         encoded_channels //= 2
 
         l1 = nn.Sequential(
             nn.ConvTranspose2d(in_channels=encoded_channels, out_channels=encoded_channels // 2, kernel_size=(4, 4),
                                stride=(2, 2), padding=(1, 1)),
-            torch.nn.BatchNorm2d(encoded_channels // 2),
-            torch.nn.LeakyReLU())
+            torch.nn.LeakyReLU(),
+          #  torch.nn.BatchNorm2d(encoded_channels // 2)
+        )
         encoded_channels //= 2
 
 
         l2 = nn.Sequential(
             nn.ConvTranspose2d(in_channels=encoded_channels, out_channels=encoded_channels // 2, kernel_size=(4, 4),
                                stride=(2, 2), padding=(1, 1)),
-            torch.nn.BatchNorm2d(encoded_channels // 2),
-            torch.nn.LeakyReLU())
+            torch.nn.LeakyReLU(),
+       #     torch.nn.BatchNorm2d(encoded_channels // 2)
+        )
         encoded_channels //= 2
 
         l3 = nn.Sequential(
             nn.ConvTranspose2d(in_channels=encoded_channels, out_channels=encoded_channels // 2, kernel_size=(4, 4),
                                stride=(2, 2), padding=(1, 1)),
-            torch.nn.BatchNorm2d(encoded_channels // 2),
-            torch.nn.LeakyReLU())
+            torch.nn.LeakyReLU(),
+         #   torch.nn.BatchNorm2d(encoded_channels // 2)
+        )
         encoded_channels //= 2
 
         cl_last =  nn.ConvTranspose2d(in_channels=encoded_channels, out_channels=3, kernel_size=(3, 3), stride=(1, 1),
@@ -117,6 +125,8 @@ class Autoencoder(nn.Module):
     def __init__(self, latent_dims, image_size:int, device:str = "cpu"):
         super(Autoencoder, self).__init__()
         self.device = device
+        self.image_size = image_size
+        self.latent_dims = latent_dims
         self.encoder = VariationalEncoder(latent_dims, image_size).to(device)
         self.decoder = VariationalDecoder(latent_dims, self.encoder.encoded_channels, self.encoder.encoded_img_size).to(device)
 
@@ -148,7 +158,7 @@ class Autoencoder(nn.Module):
             m.bias.data.zero_()
 #
     def sample(self, latents: torch.Tensor):
-        with torch.no_grad():
+        with torch.inference_mode():
             imgs = self.decoder(latents)
         return imgs
 
