@@ -1,2 +1,7 @@
-texture_vae/tensorboard
-texture_vae/snapshots
+tb
+.idea
+.pytest_cache
+.ipynb_checkpoints
+.venv
+**/__pycache__
+bricks1000

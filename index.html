@@ -52,7 +52,7 @@ Convolutional Variational Auto-Encoder.</p>
 </script>
 <script>
     latent = []
-    const LATENT_DIMS=64
+    const LATENT_DIMS=32
     const NUM_TILES = 16
     let focusLatents = async (idx) => {
         const imgs = await createTextureTile(NUM_TILES,null,null, latent.slice(idx*LATENT_DIMS, (idx+1)*LATENT_DIMS))
@@ -104,7 +104,7 @@ Convolutional Variational Auto-Encoder.</p>
     // use an async context to call onnxruntime functions.
     async function createTextureTile(count, mean, stdDev, baseLatents) {
         if (!ortSession) {
-         ortSession = await ort.InferenceSession.create('wasm/snapshot_lat64_res128_0.75.onnx');
+         ortSession = await ort.InferenceSession.create('snapshots/snapshot_lat32_res128_kl0.7.onnx');
         }
         // prepare inputs. a tensor need its corresponding TypedArray as data
         vaeSeed();

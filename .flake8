@@ -1,0 +1,32 @@
+[flake8]
+ignore =
+    # ignore "line too long" -- is covered by black
+    E501
+    # ignore " whitespace before ':'" -- is covered by black
+    E203
+    # ignore "line break before binary operator" -- is covered by black
+    W503
+    # TODO: Fix imports
+    E265
+    E402
+    F401
+    F403
+    F405
+    # TODO: Fix these issues one by one
+    E101
+    E266
+    E711
+    E712
+    E713
+    E722
+    E731
+    E741
+    F522
+    F541
+    F811
+    F821
+    F841
+    W191
+    W293
+    W391
+    W605
