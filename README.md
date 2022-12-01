@@ -45,9 +45,15 @@ cd texture_vae
 python train.py -c config.yml
 ```
 
+Tensorboard
 ```
 make tb
 ```
+Http Dev Server with ONNX runtime
+```
+make http
+```
+
 ## Training Notes
 The training images have been compiled from high-res Creative Commons Brick Textures sourced at [Texture Ninja](https://www.texture.ninja)
 Each high-res texture was randomly cropped into 128x128 images using `cli/crop_gen.py`
@@ -68,6 +74,7 @@ Each high-res texture was randomly cropped into 128x128 images using `cli/crop_g
 ### VAE Introductions
 * https://www.jeremyjordan.me/variational-autoencoders/
 * https://avandekleut.github.io/vae/
+* https://towardsdatascience.com/generating-images-with-autoencoders-77fd3a8dd368
 
 ### Interesting Papers
 * [Learning to Generate Images With Perceptual Similarity Metrics](https://arxiv.org/pdf/1511.06409.pdf)
