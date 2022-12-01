@@ -1,12 +1,12 @@
 model:
   latent_dims: 32
   texture_size: 128
-  kl_weight: 0.7
-lr: 1e-4
-epochs: 500
-snapshots: "../snapshots"
+  kl_weight: 3e-4
+lr: 1e-3
+epochs: 2000
+snapshots: "../snapshots_mssim"
 train_images: "../bricks1000"
 logs:
   logdir: "../tb/runs"
-  experiment_name: "default"
+  experiment_name: "mmsim32_3e-4"
 

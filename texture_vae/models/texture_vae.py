@@ -30,7 +30,7 @@ class VariationalEncoder(nn.Module):
                 stride=(2, 2),
                 padding=1,
             ),
-            #torch.nn.BatchNorm2d(channels),
+            # torch.nn.BatchNorm2d(channels),
             torch.nn.LeakyReLU(),
         )
         img_size //= 2

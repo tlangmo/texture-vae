@@ -15,6 +15,7 @@ from yaml import SafeLoader, load
 
 import texture_vae.utils.texture_dataset as dataset
 from texture_vae.models.texture_vae import Autoencoder
+from texture_vae.utils.mmsim import MSSIM
 from texture_vae.utils.utils import plot_image_list
 
 
@@ -27,6 +28,9 @@ def kl_loss(mu, log_var):
     return kld
 
 
+from texture_vae.utils.mmsim import MSSIM
+
+
 def train(
     autoencoder: Autoencoder,
     train_data,
@@ -35,6 +39,7 @@ def train(
     lr: float,
     post_epoch: Callable,
 ):
+    sim = MSSIM()
     opt = torch.optim.Adam(params=autoencoder.parameters(), lr=lr)
     # scheduler = CyclicLR(opt, base_lr=1e-4, max_lr=1e-3, step_size_up=100, cycle_momentum=False)
     for epoch in range(epochs):
@@ -45,18 +50,19 @@ def train(
                 tepoch.set_description(f"epoch {epoch}")
                 opt.zero_grad()
                 x_hat, mu, logvar, z = autoencoder(x)
-                mse = torch.sum((x - x_hat) ** 2, dim=(1, 2, 3))
-                mse = mse.mean()
+                # mse = torch.sum((x - x_hat) ** 2, dim=(1, 2, 3))
+                # mse = mse.mean()
+                sim_loss = sim(x, x_hat)
                 kld = kl_loss(mu, logvar)
                 kld = kld.mean()
                 loss = (
-                    mse + kl_weight * kld
+                    sim_loss + kl_weight * kld
                 )  # higher weight gives better generalization result in sampling
                 loss.backward()
                 opt.step()
                 losses.append(loss)
                 tepoch.set_postfix(loss=loss.item())
-        post_epoch(epoch, x_hat, mse, kld, sum(losses) / len(losses))
+        post_epoch(epoch, x_hat, sim_loss, kld, sum(losses) / len(losses))
 
 
 def main(config: Dict):
@@ -65,7 +71,7 @@ def main(config: Dict):
 
     LATENT_DIMS = config["model"]["latent_dims"]
     TEXTURE_SIZE = config["model"]["texture_size"]
-    KL_WEIGHT = config["model"]["kl_weight"]
+    KL_WEIGHT = float(config["model"]["kl_weight"])
     LEARNING_RATE = float(config["lr"])
     SNAPSHOT_FN = (
         Path(config["snapshots"])

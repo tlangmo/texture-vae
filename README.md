@@ -75,7 +75,7 @@ Each high-res texture was randomly cropped into 128x128 images using `cli/crop_g
 * https://www.jeremyjordan.me/variational-autoencoders/
 * https://avandekleut.github.io/vae/
 * https://towardsdatascience.com/generating-images-with-autoencoders-77fd3a8dd368
-
+* https://medium.com/mlearning-ai/enerating-images-with-ddpms-a-pytorch-implementation-cef5a2ba8cb1
 ### Interesting Papers
 * [Learning to Generate Images With Perceptual Similarity Metrics](https://arxiv.org/pdf/1511.06409.pdf)
 * [Cyclical Annealing Schedule: A Simple Approach to Mitigating KL Vanishing](https://aclanthology.org/N19-1021.pdf)
