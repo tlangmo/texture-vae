@@ -69,17 +69,15 @@ def train(
 
 
 def main(config: Dict):
-    if not os.path.exists(config["snapshots"]):
-        os.makedirs(config["snapshots"])
+    if not os.path.exists(config["snapshot"]):
+        os.makedirs(config["snapshot"])
 
     LATENT_DIMS = config["model"]["latent_dims"]
     TEXTURE_SIZE = config["model"]["texture_size"]
     KL_WEIGHT = float(config["model"]["kl_weight"])
     LEARNING_RATE = float(config["lr"])
-    SNAPSHOT_FN = (
-        Path(config["snapshots"])
-        / f"snapshot_lat{LATENT_DIMS}_res{TEXTURE_SIZE}_kl{KL_WEIGHT}.pth"
-    )
+    SNAPSHOT_FN = Path(config["snapshot"]).as_posix()
+
 
     autoencoder = Autoencoder(
         latent_dims=LATENT_DIMS, image_size=TEXTURE_SIZE, device="cuda"

@@ -57,17 +57,22 @@ make http
 ## Training Notes
 The training images have been compiled from high-res Creative Commons Brick Textures sourced at [Texture Ninja](https://www.texture.ninja)
 Each high-res texture was randomly cropped into 128x128 images using `cli/crop_gen.py`
-
-
-### Reconstructed Bricks
-![Reconstructed Bricks](bricks_reconstructed.jpg?raw=true "Bricks Reconstructed")
-
-### Sampled Bricks
-![Sampled Bricks](bricks_sampled.jpg?raw=true "Bricks Sampled")
-
+* 
 * Latent code size does not have a dramatic effect. 32 seems to be enough
 * The KLD weigthing has a huge influence on the sampling quality. While a lower value
   does improve reconstruction, the sampled images are of bad quality then.
+
+### Reconstructed Bricks
+![Reconstructed Bricks](assets/bricks_reconstructed.jpg?raw=true "Bricks Reconstructed")
+
+### Sampled Bricks
+![Sampled Bricks](assets/bricks_sampled.jpg?raw=true "Bricks Sampled")
+
+### Texture Stiching
+The VAE model can be used beyond simple sampling. Since the image generation is fully differentiateable, we can guide the image synthesis towards an objective.
+See `notebooks/stich.ipynb` 
+
+![Stiched Bricks](assets/brick_stich.gif?raw=true "Bricks Stiched")
 
 
 ## Learning Material

@@ -22,12 +22,12 @@
     </style>
 </header>
 <body>
-<h1>Texture VAE Showcase</h1>
+<h1>Brick Texture VAE Showcase</h1>
 <p>These texture tiles are automatically generated in the Browser using a Machine Learning technique called
 Convolutional Variational Auto-Encoder.</p>
-<p>Every texture is 128x128 pixels and encoded as a 64-element vector (Latent Features). In your Browser, an ONNX model
+<p>Every texture is 128x128 pixels and encoded as a 32-element vector (Latent Features). In your Browser, an ONNX model
     decodes those feature vectors back to visible images. </p>
-<p>Creating textures at runtime using ML opens a lot of creative possiblities. </p>
+<p>Creating textures at runtime using ML opens a lot of creative possiblities.</p>
 <div id="root"></div>
 <p>Click on an image to create variants </p>
 <!-- import ONNXRuntime Web from CDN -->
@@ -104,7 +104,7 @@ Convolutional Variational Auto-Encoder.</p>
     // use an async context to call onnxruntime functions.
     async function createTextureTile(count, mean, stdDev, baseLatents) {
         if (!ortSession) {
-         ortSession = await ort.InferenceSession.create('snapshots/snapshot_lat32_res128_kl0.7.onnx');
+         ortSession = await ort.InferenceSession.create('snapshots/texture_vae_lat32_res128_kl5e-4.onnx');
         }
         // prepare inputs. a tensor need its corresponding TypedArray as data
         vaeSeed();

@@ -25,7 +25,7 @@ def export_to_onnx(snapshot: str, latent_dims: int, image_size: int, outfile: st
     try:
         autoencoder.load_state_dict(torch.load(snapshot))
     except Exception as err:
-        raise ValueError("Cannot load weights file")
+        raise ValueError("Cannot load weights file", err)
 
     # create scripted verion of torch module
     dummy_input = (
@@ -56,6 +56,7 @@ def export_to_onnx(snapshot: str, latent_dims: int, image_size: int, outfile: st
 
 def validate_onnx(model_fn: str, outdir: str):
     ort_session = ort.InferenceSession(model_fn)
+    a = ort_session.get_inputs()
     md = ort_session.get_modelmeta().custom_metadata_map
     outputs = ort_session.run(
         None,
@@ -78,7 +79,6 @@ def validate_onnx(model_fn: str, outdir: str):
     ).astype("uint8")
     for idx, img in enumerate([images_uint8[i] for i in range(images_uint8.shape[0])]):
         _save_image(idx, img, outdir)
-
 
 def main():
     from argparse import ArgumentParser
