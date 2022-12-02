@@ -9,6 +9,8 @@ Copied from:
 https://github.com/AntixK/PyTorch-VAE/blob/master/models/mssim_vae.py
 Apache License 2.0
 """
+
+
 class MSSIM(nn.Module):
     def __init__(
         self, in_channels: int = 3, window_size: int = 11, size_average: bool = True

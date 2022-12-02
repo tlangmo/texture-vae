@@ -41,7 +41,9 @@ def train(
 ):
     sim = MSSIM()
     opt = torch.optim.Adam(params=autoencoder.parameters(), lr=lr)
-    # scheduler = CyclicLR(opt, base_lr=1e-4, max_lr=1e-3, step_size_up=100, cycle_momentum=False)
+    scheduler = CyclicLR(
+        opt, base_lr=lr / 2, max_lr=lr * 2, step_size_up=100, cycle_momentum=False
+    )
     for epoch in range(epochs):
         losses = []
         with tqdm(train_data, unit="batch") as tepoch:
@@ -60,6 +62,7 @@ def train(
                 )  # higher weight gives better generalization result in sampling
                 loss.backward()
                 opt.step()
+                scheduler.step()
                 losses.append(loss)
                 tepoch.set_postfix(loss=loss.item())
         post_epoch(epoch, x_hat, sim_loss, kld, sum(losses) / len(losses))
