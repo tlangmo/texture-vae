@@ -7,6 +7,12 @@ Experiments generating textures using Variational Autoencoders (VAE).
 VAEs have the benefit of fast inference, making them suitable to be deployed in the browser or games.
 
 
+### Texture Stiching
+The VAE model can be used beyond simple sampling. Since the image generation is fully differentiateable, we can guide the image synthesis towards an objective.
+See `notebooks/stich.ipynb` 
+
+![Stiched Bricks](assets/brick_stich.gif?raw=true "Bricks Stiched")
+
 ### Basic Requirements
 * Python >= 3.8
 * PyTorch >= 1.10.2
@@ -68,11 +74,7 @@ Each high-res texture was randomly cropped into 128x128 images using `cli/crop_g
 ### Sampled Bricks
 ![Sampled Bricks](assets/bricks_sampled.jpg?raw=true "Bricks Sampled")
 
-### Texture Stiching
-The VAE model can be used beyond simple sampling. Since the image generation is fully differentiateable, we can guide the image synthesis towards an objective.
-See `notebooks/stich.ipynb` 
 
-![Stiched Bricks](assets/brick_stich.gif?raw=true "Bricks Stiched")
 
 
 ## Learning Material
