@@ -4,6 +4,8 @@
 
 Experiments generating textures using Variational Autoencoders (VAE).
 
+[Live Demo](https://tlangmo.github.io/texture-vae/)
+
 VAEs have the benefit of fast inference, making them suitable to be deployed in the browser or games.
 
 
