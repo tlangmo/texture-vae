@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 from pathlib import Path
 from typing import Callable, Dict
@@ -78,14 +79,14 @@ def main(config: Dict):
     LEARNING_RATE = float(config["lr"])
     SNAPSHOT_FN = Path(config["snapshot"]).as_posix()
 
-
     autoencoder = Autoencoder(
         latent_dims=LATENT_DIMS, image_size=TEXTURE_SIZE, device="cuda"
     )
     autoencoder.weight_init(0, 0.02)
     try:
         autoencoder.load_state_dict(torch.load(SNAPSHOT_FN))
-    except FileNotFoundError as err:
+    except Exception as err:
+        print("Not using snapshot")
         pass
 
     data = torch.utils.data.DataLoader(
@@ -93,7 +94,7 @@ def main(config: Dict):
             config["train_images"],
             transform=torchvision.transforms.Resize(TEXTURE_SIZE),
         ),
-        batch_size=25,
+        batch_size=256,
         shuffle=True,
     )
     summary(autoencoder, (3, TEXTURE_SIZE, TEXTURE_SIZE), device=autoencoder.device)
@@ -110,7 +111,7 @@ def main(config: Dict):
     )
 
     def _log_epoch(epoch: int, x_hat, mse_loss, kl_loss, total_loss):
-        torch.save(autoencoder.state_dict(), SNAPSHOT_FN)
+        torch.save(autoencoder.state_dict(), SNAPSHOT_FN + f".{epoch}")
         tb_writer.add_scalar("loss/mse", mse_loss.item(), epoch)
         tb_writer.add_scalar("loss/kl", kl_loss.item(), epoch)
         tb_writer.add_scalar("loss/total", total_loss.item(), epoch)

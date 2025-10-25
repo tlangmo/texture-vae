@@ -4,9 +4,9 @@ model:
   kl_weight: 5e-4
 lr: 5e-4
 epochs: 500
-snapshot: "../snapshots_mssim/lat32_res128_kl5e-4.pth"
+snapshot: "/workspaces/texture-vae/snapshots_mssim/spark_128.pth.499"
 train_images: "../bricks1000"
 logs:
   logdir: "../tb/runs"
-  experiment_name: "lat32_res128_kl5e-4"
+  experiment_name: "spark_128_1"
 

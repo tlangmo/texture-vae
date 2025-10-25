@@ -80,6 +80,7 @@ def validate_onnx(model_fn: str, outdir: str):
     for idx, img in enumerate([images_uint8[i] for i in range(images_uint8.shape[0])]):
         _save_image(idx, img, outdir)
 
+
 def main():
     from argparse import ArgumentParser
 

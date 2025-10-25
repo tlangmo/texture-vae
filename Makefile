@@ -8,9 +8,8 @@ tb::
 	tensorboard --logdir ./tb/runs
 
 setup:
-	./create_venv.sh
-	source  ./.venv/bin/activate && poetry install
-	echo "use 'poetry shell' to activate virtual environment"
+	uv venv --system-site-packages
+	source  ./.venv/bin/activate  && uv sync
 
 http:
 	npx light-server -s . -p 8080
